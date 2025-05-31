@@ -36,7 +36,7 @@ func (s *Server) SendMsg(u *tgbotapi.Update, msg string) error {
 }
 
 // StartComahd is a handler for the start command (/start), it displays a welcome
-// message to the use
+// message to the user
 func (s *Server) StartComahd(u *tgbotapi.Update) error {
 	if err := s.SendMsg(u, fmt.Sprintf(formatHelloMsg, u.Message.From.FirstName)); err != nil {
 		s.logger.Error("err to send hello message", zap.String("whom", u.Message.From.UserName), zap.Error(err))
