@@ -32,6 +32,11 @@ type weatherData struct {
 	Weather []struct {
 		Description string `json:"description"`
 	}
+
+	Wind struct {
+		Speed float64 `json:"speed"`
+		Gust  float64 `json:"gust"`
+	} `json:"wind"`
 }
 
 // New returns a new instance of the OpenWeatheClient structure
@@ -89,6 +94,13 @@ func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherRes
 		City:        weather.Name,
 		Temperature: weather.Main.Temp,
 		Description: desc,
+		Wind: struct {
+			Speed float64 `json:"speed"`
+			Gust  float64 `json:"gust"`
+		}{
+			Speed: weather.Wind.Speed,
+			Gust:  weather.Wind.Gust,
+		},
 	}, nil
 }
 

@@ -11,6 +11,17 @@ var (
 	ErrServerStoped = errors.New("server stoped")
 )
 
+// WeatherResponse is a structure that stores weather information
+type WeatherResponse struct {
+	City        string  `json:"city"`
+	Temperature float64 `json:"temperature"`
+	Description string  `json:"description"`
+	Wind        struct {
+		Speed float64 `json:"speed"`
+		Gust  float64 `json:"gust"`
+	} `json:"wind"`
+}
+
 // WeatherClient is an interface that defines the behavior of all client structures
 // that perform network requests to external services
 type WeatherClient interface {

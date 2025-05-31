@@ -16,15 +16,10 @@ var (
 const (
 	comandStart = "/start"
 
-	formatHelloMsg   = "Hello \"%s\"! These bot will sending weather of your city if you send him /weather[Moscow]"
-	formatWeatherMsg = "%s: %.2f°C(%.2f°F)\n%s"
-)
+	formatHelloMsg = "Hello \"%s\"! These bot will sending weather of your city if you send him /weather[Moscow]"
 
-type WeatherResponse struct {
-	City        string  `json:"city"`
-	Temperature float64 `json:"temperature"`
-	Description string  `json:"description"`
-}
+	formatResponceMsg = "%s: %s\nWind speed: %.2f\tWind gust: %.2f\n%s"
+)
 
 // SendMsg is a small add-on to the regular bot.Send() to simplify things
 func (s *Server) SendMsg(u *tgbotapi.Update, msg string) error {
@@ -59,7 +54,7 @@ func (s *Server) GetWeather(u *tgbotapi.Update) error {
 	}
 
 	if ok {
-		if err := s.SendMsg(u, formatMsg(weather)); err != nil {
+		if err := s.SendMsg(u, formatMsg(weather, u.Message.From.LanguageCode)); err != nil {
 			s.logger.Error("err to send weather message", zap.String("whom", u.Message.From.UserName), zap.Error(err))
 
 			return fmt.Errorf("err to send weather: %w", err)
@@ -73,7 +68,7 @@ func (s *Server) GetWeather(u *tgbotapi.Update) error {
 			return err
 		}
 
-		if err := s.SendMsg(u, formatMsg(weather)); err != nil {
+		if err := s.SendMsg(u, formatMsg(weather, u.Message.From.LanguageCode)); err != nil {
 			s.logger.Error("err to send weather message", zap.String("whom", u.Message.From.UserName), zap.Error(err))
 
 			return fmt.Errorf("err to send weather: %w", err)
@@ -105,12 +100,28 @@ func extractCity(msg string) string {
 
 // formatMsg formats data from a Weather Response structure into a human-readable
 // format using a template
-func formatMsg(w WeatherResponse) string {
-	return fmt.Sprintf(formatWeatherMsg, w.City, w.Temperature, toFahrenheit(w.Temperature), w.Description)
+func formatMsg(w WeatherResponse, langCode string) string {
+	return fmt.Sprintf(formatResponceMsg, w.City, getTempUnit(w.Temperature, langCode), w.Wind.Speed, w.Wind.Gust, w.Description)
 }
 
 // toFahrenheit takes a temperature in degrees Celsius and then converts it to degrees
 // Fahrenheit
 func toFahrenheit(cels float64) float64 {
 	return (cels * 9 / 5) + 32
+}
+
+// getTempUnit takes temperature in degrees Celsius and a language code, if this country
+// uses degrees Fahrenheit, then it will convert the temperature to them by adding "°F" by
+// default it will return the same temperature by adding "°C"
+func getTempUnit(celsium float64, langCode string) string {
+	fahrenheitCountries := map[string]bool{
+		"en-US": true,
+		"en-LR": true,
+		"en-KY": true,
+	}
+
+	if fahrenheitCountries[langCode] {
+		return fmt.Sprintf("%.1f°F", toFahrenheit(celsium))
+	}
+	return fmt.Sprintf("%.1f°C", celsium)
 }
