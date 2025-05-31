@@ -11,8 +11,9 @@ import (
 )
 
 type OpenWeatheClient struct {
-	baseURL string
-	apiKey  string
+	baseURL     string
+	apiKey      string
+	defaultLang string
 }
 
 type weatherData struct {
@@ -25,19 +26,24 @@ type weatherData struct {
 	}
 }
 
-func New(apiKey string, baseURL string) (*OpenWeatheClient, error) {
-	if strings.TrimSpace(apiKey) == "" {
-		return nil, errors.New("emprty api")
+func New(apiKey string, baseURL string, defaultLang string) (*OpenWeatheClient, error) {
+	if strings.EqualFold(baseURL, "") {
+		return nil, errors.New("emprty base url")
 	}
 
 	return &OpenWeatheClient{
-		apiKey:  apiKey,
-		baseURL: baseURL,
+		apiKey:      apiKey,
+		baseURL:     baseURL,
+		defaultLang: defaultLang,
 	}, nil
 }
 
-func (c *OpenWeatheClient) DoHTTP(city string) (handlers.WeatherResponse, error) {
-	fullURL := makeHTTP(city, c.apiKey, c.baseURL)
+func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherResponse, error) {
+	if strings.EqualFold(lang, "") {
+		lang = c.defaultLang
+	}
+
+	fullURL := c.makeHTTP(city, lang)
 
 	resp, err := http.Get(fullURL)
 	if err != nil {
@@ -67,12 +73,12 @@ func (c *OpenWeatheClient) DoHTTP(city string) (handlers.WeatherResponse, error)
 	}, nil
 }
 
-func makeHTTP(city string, apiKey string, baseURL string) string {
+func (c *OpenWeatheClient) makeHTTP(city string, lang string) string {
 	params := url.Values{}
 	params.Add("q", city)
-	params.Add("appid", apiKey)
+	params.Add("appid", c.apiKey)
 	params.Add("units", "metric")
-	params.Add("lang", "en")
+	params.Add("lang", lang)
 
-	return baseURL + "?" + params.Encode()
+	return c.baseURL + "?" + params.Encode()
 }
