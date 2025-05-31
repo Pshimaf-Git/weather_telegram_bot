@@ -77,7 +77,7 @@ func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherRes
 			}, nil
 		}
 
-		return handlers.WeatherResponse{}, fmt.Errorf("error HTTP status code: %d", resp.StatusCode)
+		return handlers.WeatherResponse{}, fmt.Errorf("HTTP status code: %d", resp.StatusCode)
 	}
 
 	var weather weatherData
