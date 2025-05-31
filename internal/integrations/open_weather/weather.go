@@ -7,7 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
 	"weather_bot/internal/handlers"
+)
+
+const (
+	UnknownCity = "unkown city"
 )
 
 type OpenWeatheClient struct {
@@ -53,6 +58,14 @@ func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherRes
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode == http.StatusNotFound {
+			return handlers.WeatherResponse{
+				City:        city,
+				Temperature: 0.0,
+				Description: UnknownCity,
+			}, nil
+		}
+
 		return handlers.WeatherResponse{}, fmt.Errorf("error HTTP status code: %d", resp.StatusCode)
 	}
 

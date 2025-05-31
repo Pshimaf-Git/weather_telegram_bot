@@ -11,13 +11,13 @@ var (
 	ErrServerStoped = errors.New("server stoped")
 )
 
+type WeatherClient interface {
+	DoHTTP(city string, lang string) (WeatherResponse, error)
+}
+
 type MemoryRepo interface {
 	Get(city string, lang string) (WeatherResponse, bool, error)
 	Put(weather WeatherResponse, lang string) error
-}
-
-type WeatherClient interface {
-	DoHTTP(city string, lang string) (WeatherResponse, error)
 }
 
 type Server struct {

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
 	"weather_bot/internal/handlers"
 	weather "weather_bot/internal/integrations/open_weather"
 )

@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strings"
 
@@ -17,8 +16,6 @@ import (
 )
 
 const (
-	defaultPath = "cfg.yaml"
-
 	dev         = "dev"
 	prod        = "prod"
 	production  = "production"
@@ -47,11 +44,12 @@ type Repository struct {
 	Port string `yaml:"port"`
 }
 
+// Load takes data from the file whose path is specified in the environment variabl
+// (its name is the input parameter)
 func Load(cfgEnv string) (*ServerCfg, error) {
 	cfgPath := os.Getenv(cfgEnv)
 	if strings.EqualFold(cfgPath, "") {
-		log.Printf("WARNING config file path is empty(default=%s)\n", defaultCfgPath())
-		cfgPath = defaultCfgPath()
+		return nil, fmt.Errorf("err: empty config path")
 	}
 
 	cfgFile, err := os.Open(cfgPath)
@@ -74,10 +72,12 @@ func Load(cfgEnv string) (*ServerCfg, error) {
 	return &cfg, nil
 }
 
+// NewBot takes bot token from config and create bot with it
 func (cfg *ServerCfg) NewBot() (*tgbotapi.BotAPI, error) {
 	return tgbotapi.NewBotAPI(cfg.BotToken)
 }
 
+// NewWeatherClient
 func (cfg *ServerCfg) NewWeatherClient() (handlers.WeatherClient, error) {
 	return integrations.New(cfg.Name, cfg.ApiKey, cfg.BaseURL, cfg.DefaultLang)
 }
@@ -96,8 +96,4 @@ func (cfg *ServerCfg) NewLogger(options ...zap.Option) (*zap.Logger, error) {
 	}
 
 	return nil, fmt.Errorf("unknown logger name: %s", cfg.LoggerName)
-}
-
-func defaultCfgPath() string {
-	return defaultPath
 }
