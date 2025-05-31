@@ -49,24 +49,24 @@ type Repository struct {
 func Load(cfgEnv string) (*ServerCfg, error) {
 	cfgPath := os.Getenv(cfgEnv)
 	if strings.EqualFold(cfgPath, "") {
-		return nil, fmt.Errorf("err: empty config path")
+		return nil, fmt.Errorf("empty config path")
 	}
 
 	cfgFile, err := os.Open(cfgPath)
 	if err != nil {
-		return nil, fmt.Errorf("err to open config file<%s>: %w", cfgPath, err)
+		return nil, fmt.Errorf("open config file<%s>: %w", cfgPath, err)
 	}
 
 	defer cfgFile.Close()
 
 	cfgData, err := io.ReadAll(cfgFile)
 	if err != nil {
-		return nil, fmt.Errorf("err to read config file<%s>: %w", cfgPath, err)
+		return nil, fmt.Errorf("read config file<%s>: %w", cfgPath, err)
 	}
 
 	var cfg ServerCfg
 	if err := yaml.Unmarshal(cfgData, &cfg); err != nil {
-		return nil, fmt.Errorf("err to unmarshal data in config file<%s>: %W", cfgPath, err)
+		return nil, fmt.Errorf("unmarshal data in config file<%s>: %W", cfgPath, err)
 	}
 
 	return &cfg, nil

@@ -63,7 +63,7 @@ func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherRes
 
 	resp, err := http.Get(fullURL)
 	if err != nil {
-		return handlers.WeatherResponse{}, fmt.Errorf("err to get response(url=%s): %w", fullURL, err)
+		return handlers.WeatherResponse{}, fmt.Errorf("get response(url=%s): %w", fullURL, err)
 	}
 
 	defer resp.Body.Close()
@@ -82,7 +82,7 @@ func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherRes
 
 	var weather weatherData
 	if err := json.NewDecoder(resp.Body).Decode(&weather); err != nil {
-		return handlers.WeatherResponse{}, fmt.Errorf("err to decoded response body(url=%s): %w", fullURL, err)
+		return handlers.WeatherResponse{}, fmt.Errorf("decoded response body(url=%s): %w", fullURL, err)
 	}
 
 	desc := ""

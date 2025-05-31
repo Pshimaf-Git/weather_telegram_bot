@@ -16,17 +16,17 @@ func main() {
 func realMain() error {
 	cfg, err := config.Load("CONFIG_PATH")
 	if err != nil {
-		return fmt.Errorf("err to load config: %w", err)
+		return fmt.Errorf("load config: %w", err)
 	}
 
 	bot, err := cfg.NewBot()
 	if err != nil {
-		return fmt.Errorf("err to create telegram bot: %w", err)
+		return fmt.Errorf("create telegram bot: %w", err)
 	}
 
 	client, err := cfg.NewWeatherClient()
 	if err != nil {
-		return fmt.Errorf("err to create new weather client: %w", err)
+		return fmt.Errorf("create new weather client: %w", err)
 	}
 
 	repo, err := cfg.NewRepo()
@@ -36,12 +36,12 @@ func realMain() error {
 
 	logger, err := cfg.NewLogger()
 	if err != nil {
-		return fmt.Errorf("err to create zap logger: %w", err)
+		return fmt.Errorf("create zap logger: %w", err)
 	}
 
 	server, err := handlers.NewServer(bot, logger, client, repo)
 	if err != nil {
-		return fmt.Errorf("err to init server: %w", err)
+		return fmt.Errorf("init server: %w", err)
 	}
 
 	return fmt.Errorf("server running error: %w", server.Run())
