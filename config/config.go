@@ -77,15 +77,20 @@ func (cfg *ServerCfg) NewBot() (*tgbotapi.BotAPI, error) {
 	return tgbotapi.NewBotAPI(cfg.BotToken)
 }
 
-// NewWeatherClient
+// NewWeatherClient returns an element of a structure implementing the WeatherClient
+// interface with the given configuration
 func (cfg *ServerCfg) NewWeatherClient() (handlers.WeatherClient, error) {
 	return integrations.New(cfg.Name, cfg.ApiKey, cfg.BaseURL, cfg.DefaultLang)
 }
 
+// NewRepo returns an instance of a structure implementing the MemoryRepo interface
+// with the given configuration
 func (cfg *ServerCfg) NewRepo() (handlers.MemoryRepo, error) {
 	return cache.New(cfg.Port)
 }
 
+// NewLogger returns an instance of the zap.Logger structure with the given
+// configuration and the passed options
 func (cfg *ServerCfg) NewLogger(options ...zap.Option) (*zap.Logger, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.LoggerName)) {
 	case development, dev:

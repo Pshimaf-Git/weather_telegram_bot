@@ -1,3 +1,5 @@
+// integrations шы an intermediate layer where it is determined which
+// implementation of the WeatherClient interface we will use
 package integrations
 
 import (
@@ -17,6 +19,7 @@ var (
 	ErrUnkown = errors.New("unknown integration")
 )
 
+// New return a new instance of the WeatherClient interface
 func New(name string, apiKey string, baseURl string, defaultLang string) (handlers.WeatherClient, error) {
 	switch strings.ToLower(strings.TrimSpace(name)) {
 	case openWeather:

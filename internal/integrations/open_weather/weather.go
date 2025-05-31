@@ -1,3 +1,6 @@
+// weather is a package that provides one
+// implementation of the WeatherClient interface for
+// queries to the open weather service
 package weather
 
 import (
@@ -31,6 +34,7 @@ type weatherData struct {
 	}
 }
 
+// New returns a new instance of the OpenWeatheClient structure
 func New(apiKey string, baseURL string, defaultLang string) (*OpenWeatheClient, error) {
 	if strings.EqualFold(baseURL, "") {
 		return nil, errors.New("emprty base url")
@@ -43,6 +47,8 @@ func New(apiKey string, baseURL string, defaultLang string) (*OpenWeatheClient, 
 	}, nil
 }
 
+// DoHTTP makes an http request to get the weather in the given city
+// returning the result in the given language
 func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherResponse, error) {
 	if strings.EqualFold(lang, "") {
 		lang = c.defaultLang
@@ -86,6 +92,8 @@ func (c *OpenWeatheClient) DoHTTP(city string, lang string) (handlers.WeatherRes
 	}, nil
 }
 
+// makeHTTP is a helper method that builds an http request with a given base path and
+// additional parameters
 func (c *OpenWeatheClient) makeHTTP(city string, lang string) string {
 	params := url.Values{}
 	params.Add("q", city)
